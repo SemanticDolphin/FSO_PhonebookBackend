@@ -31,6 +31,13 @@ app.get("/api/persons", (request, response) => {
   response.json(data);
 });
 
+app.get("/info", (request, response) => {
+  response.send(
+    `<p>The Phonebook has information for ${data.length} people</p>
+     <p>${new Date()}</p>`
+  );
+});
+
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
