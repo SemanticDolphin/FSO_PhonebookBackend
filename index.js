@@ -30,6 +30,14 @@ let data = [
 const generateRandomId = () => {
   return Math.floor(Math.random() * 9000 + 1);
 };
+const normalizeName = (name) => {
+  return name.toLowerCase().replaceAll(" ", "");
+};
+const NameExists = (name) => {
+  return data.some(
+    (person) => normalizeName(person.name) === normalizeName(name)
+  );
+};
 
 app.get("/info", (request, response) => {
   response.send(
@@ -59,16 +67,36 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
+  const { name, number } = request.body;
+
   if (!request.body) {
     return response.status(400).json({
       error: "No information sent",
     });
   }
 
+  if (!name) {
+    return response.status(422).json({
+      error: "Name is missing",
+    });
+  }
+
+  if (!number) {
+    return response.status(422).json({
+      error: "Number is missing",
+    });
+  }
+
+  if (NameExists(name)) {
+    return response.status(409).json({
+      error: "Name already exists in phonebook",
+    });
+  }
+
   const newPerson = {
     id: generateRandomId(),
-    name: request.body.name,
-    number: request.body.number,
+    name,
+    number,
   };
 
   data = data.concat(newPerson);
