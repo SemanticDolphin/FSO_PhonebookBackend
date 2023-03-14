@@ -48,6 +48,12 @@ app.get("/api/persons/:id", (request, response) => {
   }
 });
 
+app.delete("/api/persons/:id", (request, response) => {
+  const personId = Number(request.params.id);
+  data = data.filter((person) => person.id !== personId);
+  response.status(204).end();
+});
+
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
