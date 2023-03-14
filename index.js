@@ -27,6 +27,10 @@ let data = [
   },
 ];
 
+const generateRandomId = () => {
+  return Math.floor(Math.random() * 9000 + 1);
+};
+
 app.get("/info", (request, response) => {
   response.send(
     `<p>The Phonebook has information for ${data.length} people</p>
@@ -52,6 +56,24 @@ app.delete("/api/persons/:id", (request, response) => {
   const personId = Number(request.params.id);
   data = data.filter((person) => person.id !== personId);
   response.status(204).end();
+});
+
+app.post("/api/persons", (request, response) => {
+  if (!request.body) {
+    return response.status(400).json({
+      error: "No information sent",
+    });
+  }
+
+  const newPerson = {
+    id: generateRandomId(),
+    name: request.body.name,
+    number: request.body.number,
+  };
+
+  data = data.concat(newPerson);
+
+  response.json(newPerson);
 });
 
 app.listen(PORT, () => {
