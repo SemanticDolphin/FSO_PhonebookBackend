@@ -43,17 +43,17 @@ let data = [
   // },
 ];
 
-const generateRandomId = () => {
-  return Math.floor(Math.random() * 9000 + 1);
-};
-const normalizeName = (name) => {
-  return name.toLowerCase().replaceAll(" ", "");
-};
-const NameExists = (name) => {
-  return data.some(
-    (person) => normalizeName(person.name) === normalizeName(name)
-  );
-};
+// const generateRandomId = () => {
+//   return Math.floor(Math.random() * 9000 + 1);
+// };
+// const normalizeName = (name) => {
+//   return name.toLowerCase().replaceAll(" ", "");
+// };
+// const NameExists = (name) => {
+//   return data.some(
+//     (person) => normalizeName(person.name) === normalizeName(name)
+//   );
+// };
 
 app.get("/info", (request, response) => {
   Person.count({}).then((persons) => {
@@ -103,21 +103,20 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  if (NameExists(name)) {
-    return response.status(409).json({
-      error: "Name already exists in phonebook",
-    });
-  }
+  // if (NameExists(name)) {
+  //   return response.status(409).json({
+  //     error: "Name already exists in phonebook",
+  //   });
+  // }
 
-  const newPerson = {
-    id: generateRandomId(),
+  const newPerson = new Person({
     name,
     number,
-  };
-
-  data = data.concat(newPerson);
-
-  response.json(newPerson);
+  });
+  newPerson.save().then((result) => {
+    console.log(`Added ${newPerson.name} to phonebook`);
+    response.json(newPerson);
+  });
 });
 
 app.listen(PORT, () => {
