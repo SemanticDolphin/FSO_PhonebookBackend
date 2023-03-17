@@ -2,7 +2,10 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 3001;
+require("dotenv").config();
+const Person = require("./models/person");
+
+const PORT = process.env.PORT;
 
 morgan.token("request-body", (req, res) => {
   return req.method === "POST" ? JSON.stringify(req.body) : " ";
@@ -18,26 +21,26 @@ app.use(
 );
 
 let data = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
+  // {
+  //   id: 1,
+  //   name: "Arto Hellas",
+  //   number: "040-123456",
+  // },
+  // {
+  //   id: 2,
+  //   name: "Ada Lovelace",
+  //   number: "39-44-5323523",
+  // },
+  // {
+  //   id: 3,
+  //   name: "Dan Abramov",
+  //   number: "12-43-234345",
+  // },
+  // {
+  //   id: 4,
+  //   name: "Mary Poppendieck",
+  //   number: "39-23-6423122",
+  // },
 ];
 
 const generateRandomId = () => {
@@ -53,24 +56,24 @@ const NameExists = (name) => {
 };
 
 app.get("/info", (request, response) => {
-  response.send(
-    `<p>The Phonebook has information for ${data.length} people</p>
-     <p>${new Date()}</p>`
-  );
+  Person.count({}).then((persons) => {
+    response.send(
+      `<p>The Phonebook has information for ${persons} people</p>
+       <p>${new Date()}</p>`
+    );
+  });
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(data);
+  Person.find({}).then((per) => {
+    response.json(per);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const personId = Number(request.params.id);
-  const personInfo = data.find((person) => person.id === personId);
-  if (personInfo) {
-    response.json(personInfo);
-  } else {
-    response.status(404).end();
-  }
+  Person.findById(request.params.id).then((person) => {
+    response.json(person);
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
