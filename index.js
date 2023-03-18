@@ -68,8 +68,8 @@ app.get("/info", (request, response, next) => {
 
 app.get("/api/persons", (request, response, next) => {
   Person.find({})
-    .then((per) => {
-      response.json(per);
+    .then((person) => {
+      response.json(person);
     })
     .catch((error) => next(error));
 });
@@ -94,7 +94,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const { name, number } = request.body;
 
   if (!request.body) {
@@ -126,11 +126,26 @@ app.post("/api/persons", (request, response) => {
     number,
   });
 
-  newPerson.save().then((result) => {
-    console.log(`Added ${newPerson.name} to phonebook`);
-    response.json(newPerson);
-  });
+  newPerson
+    .save()
+    .then((result) => {
+      console.log(`Added ${newPerson.name} to phonebook`);
+      response.json(newPerson);
+    })
+    .catch((error) => next(error));
 });
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const { name, number } = request.body;
+  const person = {
+    name,
+    number,
+  };
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => response.json(updatedPerson))
+    .catch((error) => next(error));
+});
+
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
