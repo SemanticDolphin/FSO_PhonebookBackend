@@ -55,33 +55,43 @@ let data = [
 //   );
 // };
 
-app.get("/info", (request, response) => {
-  Person.count({}).then((persons) => {
-    response.send(
-      `<p>The Phonebook has information for ${persons} people</p>
+app.get("/info", (request, response, next) => {
+  Person.count({})
+    .then((persons) => {
+      response.send(
+        `<p>The Phonebook has information for ${persons} people</p>
        <p>${new Date()}</p>`
-    );
-  });
+      );
+    })
+    .catch((error) => next(error));
 });
 
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then((per) => {
-    response.json(per);
-  });
+app.get("/api/persons", (request, response, next) => {
+  Person.find({})
+    .then((per) => {
+      response.json(per);
+    })
+    .catch((error) => next(error));
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  Person.findById(request.params.id).then((person) => {
-    response.json(person);
-  });
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
     .then((result) => {
       response.status(204).end();
     })
-    .catch((error) => console.log(error));
+    .catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
@@ -121,7 +131,18 @@ app.post("/api/persons", (request, response) => {
     response.json(newPerson);
   });
 });
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
 
+  if (error.name === "CastError") {
+    return response
+      .status(400)
+      .send({ error: "id is not formatted correctly" });
+  }
+
+  next(error);
+};
+app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
