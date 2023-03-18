@@ -20,46 +20,11 @@ app.use(
   )
 );
 
-let data = [
-  // {
-  //   id: 1,
-  //   name: "Arto Hellas",
-  //   number: "040-123456",
-  // },
-  // {
-  //   id: 2,
-  //   name: "Ada Lovelace",
-  //   number: "39-44-5323523",
-  // },
-  // {
-  //   id: 3,
-  //   name: "Dan Abramov",
-  //   number: "12-43-234345",
-  // },
-  // {
-  //   id: 4,
-  //   name: "Mary Poppendieck",
-  //   number: "39-23-6423122",
-  // },
-];
-
-// const generateRandomId = () => {
-//   return Math.floor(Math.random() * 9000 + 1);
-// };
-// const normalizeName = (name) => {
-//   return name.toLowerCase().replaceAll(" ", "");
-// };
-// const NameExists = (name) => {
-//   return data.some(
-//     (person) => normalizeName(person.name) === normalizeName(name)
-//   );
-// };
-
 app.get("/info", (request, response, next) => {
   Person.count({})
-    .then((persons) => {
+    .then((amountOfPeople) => {
       response.send(
-        `<p>The Phonebook has information for ${persons} people</p>
+        `<p>The Phonebook has information for ${amountOfPeople} people</p>
        <p>${new Date()}</p>`
       );
     })
