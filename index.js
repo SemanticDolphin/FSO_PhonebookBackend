@@ -7,7 +7,7 @@ const Person = require("./models/person");
 
 const PORT = process.env.PORT;
 
-morgan.token("request-body", (req, res) => {
+morgan.token("request-body", (req) => {
   return req.method === "POST" ? JSON.stringify(req.body) : " ";
 });
 
@@ -53,7 +53,7 @@ app.get("/api/persons/:id", (request, response, next) => {
 
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));
@@ -93,7 +93,7 @@ app.post("/api/persons", (request, response, next) => {
 
   newPerson
     .save()
-    .then((result) => {
+    .then(() => {
       console.log(`Added ${newPerson.name} to phonebook`);
       response.json(newPerson);
     })
