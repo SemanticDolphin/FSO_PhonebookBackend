@@ -102,11 +102,18 @@ app.post("/api/persons", (request, response, next) => {
 
 app.put("/api/persons/:id", (request, response, next) => {
   const { name, number } = request.body;
+
   const person = {
     name,
     number,
   };
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+
+  const options = {
+    new: true,
+    runValidators: true,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, person, options)
     .then((updatedPerson) => response.json(updatedPerson))
     .catch((error) => next(error));
 });
@@ -118,6 +125,8 @@ const errorHandler = (error, request, response, next) => {
     return response
       .status(400)
       .send({ error: "id is not formatted correctly" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);

@@ -16,7 +16,14 @@ mongoose
   });
 
 const personSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minLength: [
+      3,
+      "Minimum length of a name is 3 characters, {VALUE} is shorter than that",
+    ],
+    required: true,
+  },
   number: String,
 });
 
